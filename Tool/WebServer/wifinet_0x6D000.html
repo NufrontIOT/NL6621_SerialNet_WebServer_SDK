@@ -1,0 +1,96 @@
+<html>
+<head>
+<title>WIFI SERIALNET</title>
+<meta http-equiv="Content-Type" content="text/html;charset=gb2312">
+<link rel="stylesheet" type="text/css" href="public.css">
+</head>
+<body>
+<div id="container">
+<div id="head">
+<h1>WIFI SERIALNET</h1>
+<a href="login_0x6A000.html">SIGN IN</a>
+|| <a href="status_0x6B000.html">SYSTEM WIZARD</a>
+|| <a href="wifibase_0x6C000.html">WIFI BASE</a>
+|| <a href="wifinet_0x6D000.html">WIFI SERIALNET</a>
+</div>
+<div id="maincontent">
+<div id="menu">
+<fieldset><legend>UART Config</legend>
+<table align="center">
+<form action="setupuart" method="post">
+<tr>
+  <td>Baudrate</td>
+  <td><select name="baudrate">
+  <option value="300">300</option>
+  <option value="1200">1200</option>
+  <option value="2400">2400</option>
+  <option value="4800">4800</option>
+  <option value="9600">9600</option>
+  <option value="19200">19200</option>
+  <option value="38400">38400</option>
+  <option value="57600">57600</option>
+  <option value="115200">115200</option>
+  <option value="156250">156250</option>
+  <option value="250000">250000</option>
+  <option value="312500">312500</option>
+  <option value="500000">500000</option>
+  <option value="625000">625000</option>
+  <option value="1250000">1250000</option>
+  </select></td>
+</tr>
+<tr>
+  <td>Frame length</td>
+  <td><input name="framelen" value="" size="15" maxlength="100"></td>
+</tr>
+<tr>
+  <td>Frame time</td>
+  <td><input name="frametime" value="" size="15" maxlength="100"></td>
+</tr>
+<tr align="center">
+  <td colspan="2"><input name="save" value="submit" type="submit"></td>
+</tr>
+</form>
+</table>
+</fieldset>
+<fieldset><legend>SerialNet config</legend>
+<table align="center">
+<form action="setupnet" method="post">
+<tr>
+  <td>Work Mode</td>
+  <td> 
+  <label><input name="workmode" value="0" type="radio">AT-Mode</label> 
+  <label><input name="workmode" value="1" type="radio">DATA-Mode</label>
+  </td>
+</tr>
+<tr>
+  <td>Socket Type</td>
+  <td> 
+  <label><input name="socktype" value="0" type="radio">UDP</label> 
+  <label><input name="socktype" value="1" type="radio">TCP</label>
+  </td>
+</tr>
+<tr>
+  <td>Connect Type</td>
+  <td> 
+  <label><input name="conntype" value="0" type="radio">client</label> 
+  <label><input name="conntype" value="1" type="radio">server</label>
+  </td>
+</tr>
+<tr>
+  <td>Remote IP ADDR</td>
+  <td><input name="remoteip" value="" size="15" maxlength="100"></td>
+</tr>
+<tr>
+  <td>Port</td>
+  <td><input name="port" value="" size="15" maxlength="100"></td>
+</tr>
+<tr align="center">
+  <td colspan="2"><input name="save" value="submit" type="submit"></td>
+</tr>
+</form>
+</table>
+</fieldset>
+</div>
+</div>
+</div>
+</body>
