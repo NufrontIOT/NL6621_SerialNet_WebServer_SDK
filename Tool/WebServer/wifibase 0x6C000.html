@@ -1,0 +1,135 @@
+<html>
+<head>
+<title>WIFI BASE</title>
+<meta http-equiv="Content-Type" content="text/html;charset=gb2312">
+<link rel="stylesheet" type="text/css" href="public.css">
+</head>
+<body>
+<div id="container">
+<div id="head">
+<h1>WIFI BASE</h1>
+<a href="login.html">SIGN IN</a>
+|| <a href="status.html">SYSTEM WIZARD</a>
+|| <a href="wifibase.html">WIFI BASE</a>
+|| <a href="wifinet.html">WIFI SERIALNET</a>
+</div>
+<div id="maincontent">
+<div id="menu">
+<fieldset><legend>WIFI Base Config</legend>
+<table align="center">
+<form action="wifibase" method="post">
+<tr><td><h3>WiFi Mode Set：</h3></td></tr>
+<tr>
+  <td>WiFi Mode</td>
+  <td>
+  <select name="wifimode">
+  <option value="0">STA</option>
+  <option value="2">SoftAP</option>
+  </select>
+  </td>
+</tr>
+<tr>
+  <td>Encry</td>
+  <td>
+  <select name="encry">
+  <option value="0">none</option>
+  <option value="1">wep</option>
+  <option value="2">tkip</option>
+  <option value="3">ccmp</option>
+  <option value="4">auto</option>
+  </select>
+  </td>
+</tr>
+<tr>
+  <td>AuthMode</td>
+  <td>
+  <select name="authmode">
+  <option value="0">open</option>
+  <option value="1">share</option>
+  <option value="2">wpa1</option>
+  <option value="3">wpa2</option>
+  </select>
+  </td>
+</tr>
+<tr><td><h3>SofpAP Set：</h3></td></tr>
+<tr>
+  <td>SSID</td>
+  <td><input name="apssid" value="" size="30" maxlength="100"></td>
+</tr>
+<tr>
+  <td>PASS</td>
+  <td><input name="apkey" value="" size="30" maxlength="100" type="password"></td>
+</tr>
+<tr>
+  <td>Local IP</td>
+  <td><input name="apipaddr" value="" size="30" maxlength="100"></td>
+</tr>
+<tr>
+  <td>Netmask</td>
+  <td><input name="apnetmask" value="" size="30" maxlength="100"></td>
+</tr>
+<tr>
+  <td>Channel</td>
+  <td>
+  <select name="channel">
+  <option value="1">ch1</option>
+  <option value="2">ch2</option>
+  <option value="3">ch3</option>
+  <option value="4">ch4</option>
+  <option value="5">ch5</option>
+  <option value="6">ch6</option>
+  <option value="7">ch7</option>
+  <option value="8">ch8</option>
+  <option value="9">ch9</option>
+  <option value="10">ch10</option>
+  <option value="11">ch11</option>
+  <option value="12">ch12</option>
+  <option value="13">ch13</option>
+  </select>
+  </td>
+</tr>
+<tr><td><h3>SAT Set：</h3></td></tr>
+<tr>
+  <td>SSID</td>
+  <td><input name="stassid" value="" size="30" maxlength="100"></td>
+</tr>
+<tr>
+  <td>PASS</td>
+  <td><input name="stakey" value="" size="30" maxlength="100" type="password"></td>
+</tr>
+<tr>
+  <td>DHCP Client</td>
+  <td>
+  <select name="dhcp">
+  <option value="0">Disable</option>
+  <option value="1">Enable</option>
+  </select>
+  </td>
+</tr>
+<tr>
+  <td>IP Address</td>
+  <td><input name="staipaddr" value="" size="30" maxlength="100"></td>
+</tr>
+<tr>
+  <td>Netmask</td>
+  <td><input name="stanetmask" value="" size="30" maxlength="100"></td>
+</tr>
+<tr>
+  <td>Gateway</td>
+  <td><input name="gateway" value="" size="30" maxlength="100"></td>
+</tr>
+<tr>
+  <td>DNS Server</td>
+  <td><input name="dnsserv" value="" size="30" maxlength="100"></td>
+</tr>
+<tr align="center">
+  <td colspan="2"> <input name="save" value="submit" type="submit"></td>
+</tr>
+</form>
+</table>
+</fieldset>
+</div>
+</div>
+</div>
+</body>
+

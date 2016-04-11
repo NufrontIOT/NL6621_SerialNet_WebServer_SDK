@@ -1,0 +1,71 @@
+<html>
+<head>
+<title>SYSTEM WIZARD</title>
+<meta http-equiv="Content-Type" content="text/html;charset=gb2312">
+<link rel="stylesheet" type="text/css" href="public.css">
+</head>
+<body>
+<div id="container">
+<div id="head">
+<h1>SYSTEM WIZARD</h1>
+<a href="login.html">SIGN IN</a>
+|| <a href="status.html">SYSTEM WIZARD</a>
+|| <a href="wifibase.html">WIFI BASE</a>
+|| <a href="wifinet.html">WIFI SERIALNET</a>
+</div>
+<div id="maincontent">
+<div id="menu">
+<fieldset><legend>System Status</legend>
+<table align="center">
+<tr>
+  <td>Device Name: WIFI SerialNet Module</td>
+</tr>    
+<tr>
+  <td>SDK Version:</td>
+</tr>
+<tr>
+  <td>SerialNet Version:</td>
+</tr>
+<tr>
+  <td>IP ADDR:</td>
+</tr>
+<tr>
+  <td>MAC ADDR:</td>
+</tr>
+</table>
+</fieldset>
+<fieldset><legend>System Property</legend>
+<table align="center">
+<tr>
+<td>Reset System</td>
+<td>
+ <form action="reboot" method="post"><input name="reboot" value="reboot" type="submit"></form>
+</td>
+</tr>
+<tr>
+<td>Factory</td>
+<td>
+ <form action="factory" method="post"><input name="factory" value="factory" type="submit"></form>
+</td>
+</tr>
+</table>
+</fieldset>
+   <fieldset class="cbi-section">
+		<legend>online update firmware</legend>	
+			<form method="post" action="update" enctype="multipart/form-data">
+					<div class="cbi-value cbi-value-last">
+						<label class="cbi-value-title" for="image">choose firmware:</label>
+						<div class="cbi-value-field">
+							<input type="file" name="image" id="image" />
+							<input type="submit" class="cbi-button cbi-input-apply" value="update" />
+						</div>
+					</div>	
+			</form>	
+	</fieldset>
+</div>
+</div>
+</div>
+
+</body>
+</html>
+

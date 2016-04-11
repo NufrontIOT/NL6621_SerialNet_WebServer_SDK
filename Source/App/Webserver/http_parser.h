@@ -41,6 +41,14 @@ typedef struct
   HtmlGetFunc get; 
 } HTTPVAR;
 
+typedef struct boot_param_t {
+	unsigned int boot_addr;
+	unsigned short boot_flag;
+	unsigned short boot_status;
+	unsigned int sdk1_cnt;
+	unsigned int sdk2_cnt;
+} __attribute__((packed))boot_param_t;
+
 //----- PROTOTYPES -----
 unsigned int http_fparse(char *dst, unsigned int file, unsigned int *start, unsigned int len, unsigned int param);
 unsigned int http_fdata(unsigned char *dst, unsigned int file, unsigned int start, unsigned int len);

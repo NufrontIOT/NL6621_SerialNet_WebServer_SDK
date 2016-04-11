@@ -858,7 +858,7 @@ static void responseWSBCN(int argc, char *argv[])
         period = atoi(argv[1]);
         mode = (UINT8)atoi(argv[2]);
 
-        if (period < 100 || period > 65535|| (mode != 0 && mode != 1)) {
+        if (period < 0 || period > 65535|| (mode != 0 && mode != 1)) {
             printf("+ERROR=%d\n\r", INVALID_PARAMETER);
             return;
         }else {	
@@ -943,6 +943,22 @@ static void responseWSCAP(int argc, char *argv[])
             InfWiFiStart();			
             memcpy(&UserParam.cfg, &SysParam, sizeof(CFG_PARAM));					
         }
+		else if(SysParam.WiFiCfg.Protocol == 1)
+		{
+		 	InfWiFiStop();
+            OSTimeDly(10);
+
+			memcpy(&SysParam, &UserParam.cfg, sizeof(CFG_PARAM));
+		
+//            InfNetModeSet(PARAM_NET_MODE_STA_ADHOC); 
+            InfSsidSet((UINT8 *)argv[1], strlen(argv[1]));    /* set ssid */
+            InfKeySet(0, (UINT8 *)argv[2], strlen(argv[2])+1);  /* set pw */
+//            InfConTryTimesSet((UINT8)Trytime);                       /* set trytime */	
+
+            printf("+OK:adhoc...\n\r");
+            InfWiFiStart();
+			memcpy(&UserParam.cfg, &SysParam, sizeof(CFG_PARAM));
+		}
 
     } else {
         printf("+ERROR=%d\n\r", INVALID_PARAMETER);
@@ -1222,7 +1238,7 @@ static void responseNLOCIP(int argc, char *argv[])
 static void responseWSACONF(int argc, char *argv[])
 {	
 	if(argc == 1){
-		sys_thread_new("SoftApConfThread",SoftApConfThread, NULL, NST_TEST_APP_TASK_STK_SIZE, TCPIP_THREAD_PRIO+8);
+		sys_thread_new("SoftApConfThread",SoftApConfThread, NULL, NST_TEST_APP_TASK_STK_SIZE, TCPIP_THREAD_PRIO+1);
 	}else{
 		printf("+ERROR=%d\r\n", INVALID_PARAMETER);
 	}

@@ -179,54 +179,56 @@ void http_close(unsigned int idx)
 
 
 void http_engine(unsigned int idx, char *rx, unsigned int rx_len, unsigned char *tx)
-{
+{	
     unsigned int tx_len = 0;
-
+	static unsigned int updFlag=0;
+	  
     switch (http_table[idx].status)
     {
         case HTTP_CLOSED:
             if (rx_len)
-            {
-                if(strncmpi(rx, "GET", 3) == 0)
+            {			    
+                if(strncmpi(rx, "GET", 3) == 0)/*METHOD/part-to-resource-HTTP/Version-number*/
                 {
+					updFlag=0;
 					log_info("GET Table form data.\n");
                     rx     += 3+1;
                     rx_len -= 3+1;
-					if (strncmpi(rx, "/login_0x6A000.html", strlen("/login_0x6A000.html")) == 0)
+					if (strncmpi(rx, "/login.html", strlen("/login.html")) == 0)
 					{
 						log_info("Login system.\n");
-						http_sendfile(idx, "/login_0x6A000.html", tx);
+						http_sendfile(idx, "/login.html", tx);
 					} 
-					else if (strncmpi(rx, "/status_0x6B000.html", strlen("/status_0x6B000.html")) == 0) 
+					else if (strncmpi(rx, "/status.html", strlen("/status.html")) == 0) 
 					{
 					 	log_info("Get system status html.\n");
-						http_sendfile(idx, "/status_0x6B000.html", tx);
+						http_sendfile(idx, "/status.html", tx);
 					}
-					else if (strncmpi(rx, "/wifibase_0x6C000.html", strlen("/wifibase_0x6C000.html")) == 0) 
+					else if (strncmpi(rx, "/wifibase.html", strlen("/wifibase.html")) == 0) 
 					{
 					 	log_info("Get wifibase html.\n");
-						http_sendfile(idx, "/wifibase_0x6C000.html", tx);
+						http_sendfile(idx, "/wifibase.html", tx);
 					}
-					else if (strncmpi(rx, "/wifinet_0x6D000.html", strlen("/wifinet_0x6D000.html")) == 0) 
+					else if (strncmpi(rx, "/wifinet.html", strlen("/wifinet.html")) == 0) 
 					{
 					 	log_info("Get wifi network html.\n");
-						http_sendfile(idx, "/wifinet_0x6D000.html", tx);
+						http_sendfile(idx, "/wifinet.html", tx);
 					}
-					else if (strncmpi(rx, "/public_0x69000.css", strlen("/public_0x69000.css")) == 0) 
+					else if (strncmpi(rx, "/public.css", strlen("/public.css")) == 0) 
 					{
 					 	log_info("Get public css.\n");
-						http_sendfile(idx, "/public_0x69000.css", tx);
+						http_sendfile(idx, "/public.css", tx);
 					}
 					else 
 					{
 						log_info("Default login webserver.\n\n");
-                    	http_sendfile(idx, "/login_0x6A000.html", tx);
+                    	http_sendfile(idx, "/login.html", tx);
 					}
                 }
                 else if(strncmpi(rx, "POST", 4) == 0)
                 {
 					log_info("POST Table form data.\n");
-
+					updFlag=0;
                     rx     += 4+1;
                     rx_len -= 4+1;
                     if (strncmpi(rx, "/reboot", 7) == 0)		/* process setupwifi form */
@@ -238,6 +240,10 @@ void http_engine(unsigned int idx, char *rx, unsigned int rx_len, unsigned char 
 					{
                         tx_len = sprintf((char*)tx, HTTP_200_HEADER);
 						http_factory(idx, (char*)tx, tx_len);						
+					}
+					else if (strncmpi(rx, "/update", 7) == 0)  /* process resetwifi form */
+					{	  
+						updFlag=1;  
 					}
 				    else if (strncmpi(rx, "/wifibase", 9) == 0)  /* process resetwifi form */
 					{
@@ -256,6 +262,17 @@ void http_engine(unsigned int idx, char *rx, unsigned int rx_len, unsigned char 
                         http_sendfile(idx, rx, tx);
                     }
                 }
+				else if(updFlag != 0)
+				{					
+					if(http_update(idx, (char*)rx, rx_len, (char *)tx, updFlag) == 0)
+					{
+						updFlag=0;
+						printf("rebooting....\r\n");
+						BSP_ChipReset();
+					}
+					else
+						updFlag++;		
+				}
                 else
                 {
                     tx_len = sprintf((char*)tx, HTTP_400_HEADER"Error 400 Bad request\r\n\r\n");

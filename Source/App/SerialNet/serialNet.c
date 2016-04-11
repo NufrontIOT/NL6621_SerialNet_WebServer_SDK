@@ -17,8 +17,7 @@
  * ChangLog:
  *  version    Author      Date        Purpose
  *  0.01.01     Lin Hui    11/11/2014   Create and initialize it.   
- *  0.01.02     Lin Hui    10/12/2014   Fix the bug in internal release SerialNet 0.01.02
- *  0.01.04     Hui Lou    08/10/2015   Fix the bug in internal release SerialNet 0.01.04 and Add to Webserver 
+ *  0.01.02     Lin Hui    10/12/2014   Fix the bug in internal release SerialNet 0.01.02 
  *     
  * =====================================================================================
  */
@@ -79,7 +78,7 @@ static VOID ReadFlash(UINT8* pBuf, UINT32 DataLen, UINT32 ReadStartPos)
  *  Description:  write data to nor flash 
  * =====================================================================================
  */
-static VOID WriteFlash(UINT8* pData, UINT32 DataLen, UINT32 BurnStartPos)
+VOID WriteFlash(UINT8* pData, UINT32 DataLen, UINT32 BurnStartPos)
 {
 	UINT8  sector_num;	//扇区地址   GD25q41 0~127
 	UINT16 sector_off;	//在扇区内的偏移

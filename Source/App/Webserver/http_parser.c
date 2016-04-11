@@ -115,11 +115,11 @@ unsigned char* get_web_html(unsigned int type)
 const HTTPFILE httpfiles[HTTPFILES] = 
 {
     {"/",            	HTML_FILE, 	get_web_html,	get_web_html_len},
-    {"/login_0x6A000.html",     HTML_FILE, 	get_web_html, 	get_web_html_len},
-    {"/status_0x6B000.html",   	HTML_FILE, 	get_web_html,  	get_web_html_len},
-    {"/wifibase_0x6C000.html", 	HTML_FILE, 	get_web_html,  	get_web_html_len},
-	{"/wifinet_0x6D000.html", 	HTML_FILE, 	get_web_html,  	get_web_html_len},
-    {"/public_0x69000.css", 	CSS_FILE, 	get_web_html,  	get_web_html_len},
+    {"/login.html",     HTML_FILE, 	get_web_html, 	get_web_html_len},
+    {"/status.html",   	HTML_FILE, 	get_web_html,  	get_web_html_len},
+    {"/wifibase.html", 	HTML_FILE, 	get_web_html,  	get_web_html_len},
+	{"/wifinet.html", 	HTML_FILE, 	get_web_html,  	get_web_html_len},
+    {"/public.css", 	CSS_FILE, 	get_web_html,  	get_web_html_len},
 };
 
 void http_senddata_alloc(void)
@@ -370,7 +370,7 @@ char* http_skiphd(const char *src, unsigned int *len)
 
 int http_resetsys(unsigned int idx, char *tx, unsigned int tx_len)
 {
-	http_sendfile(idx, "/login_0x6A000.html", (unsigned char *)tx);
+	http_sendfile(idx, "/login.html", (unsigned char *)tx);
 	OSTimeDly(10);
 	UserParam.atMode = wl_workmode;  
     UserParam.isValid = USER_PARAM_FLAG_VALID; 
@@ -384,7 +384,7 @@ int http_resetsys(unsigned int idx, char *tx, unsigned int tx_len)
 
 int http_factory(unsigned int idx, char *tx, unsigned int tx_len)
 {
-	http_sendfile(idx, "/login_0x6A000.html", (unsigned char *)tx);
+	http_sendfile(idx, "/login.html", (unsigned char *)tx);
     memset((void*)&UserParam, 0, sizeof(USER_CFG_PARAM));
     SaveUserParam();
 
@@ -489,7 +489,7 @@ void http_setup_wifibase(unsigned int idx, char *rx, unsigned int rx_len, char *
 	SetWifiParam(ssid, key, wl_ipaddr, wl_netmask, wl_gateway, wl_dnsserv,
 			wl_protocol, wl_encrymode, wl_authmode, wl_channel);
 
- 	http_sendfile(idx, "/wifibase_0X6C000.html", (unsigned char *)tx);
+ 	http_sendfile(idx, "/wifibase.html", (unsigned char *)tx);
 	 
 }
 
@@ -534,7 +534,7 @@ void http_setup_uart(unsigned int idx, char *rx, unsigned int rx_len, char *tx)
 	UserParam.frameLength = wl_framelen;
 	UserParam.frameGap = wl_frametime;
 
-	http_sendfile(idx, "/wifinet_0x6D000.html", (unsigned char*)tx);
+	http_sendfile(idx, "/wifinet.html", (unsigned char*)tx);
 	/* set user parameters valid flag */		 
 }
 
@@ -586,5 +586,98 @@ void http_setup_net(unsigned int idx, char *rx, unsigned int rx_len, char *tx)
 	UserParam.remoteCommIp = wl_remoteip;	 
 	UserParam.socketPort = wl_port; 
 
-	http_sendfile(idx, "/wifinet_0x6D000.html", (unsigned char *)tx);
+	http_sendfile(idx, "/wifinet.html", (unsigned char *)tx);
+}
+
+
+/*
+******************************************************************************
+**        int http_update(unsigned int idx, char *rx, unsigned int rx_len, char *tx, unsigned int updFlag)
+**
+** Description  :online update firmware in web, recive firmware file int web, then write the file to flash  
+** Arguments    : 
+                  pParam
+                  
+** Returns      : 
+** Author       : DongChunLi                                  
+** Date         : 
+**
+******************************************************************************
+*/
+int http_update(unsigned int idx, char *rx, unsigned int rx_len, char *tx, unsigned int updFlag)
+{	
+	unsigned int temp;
+	unsigned int endOffset=0;			//保存每一帧数据最后100个字节内的偏移量，用于检测是否到达固件尾
+	static unsigned int firmwareSize=0; //已接收固件大小
+	static int fmwStartSign=0;			//标记已检测到的数据是固件数据
+	int fmwEndSign=0;					//标记最后一帧数据为固件尾部数据
+	boot_param_t boot_param;
+	unsigned int handshakingOffset=256; //偏移掉固件握手包
+
+	QSpiFlashRead(0x33000, &boot_param, sizeof(boot_param));
+	boot_param.boot_addr = NVM_FW_BAK_OFFSET;
+	boot_param.boot_flag = 0x02;
+	boot_param.boot_status = 0x01;
+ 
+	if(updFlag <= 2)					//在头两帧数据中检测固件头的握手包,新的一帧请求数据updFlag=1，但这一帧不一定包含固件头
+	{	
+		temp=rx_len;	
+		for (; rx_len!=0;)
+	    {
+		    if(strncmpi(rx, "Nu_link",7) == 0)						   
+	        {
+				fmwStartSign = 1;		//标记是固件头
+				firmwareSize = 0;
+				WriteFlash((UINT8 *)rx + handshakingOffset, rx_len - handshakingOffset, NVM_FW_BAK_OFFSET);	
+				firmwareSize+=rx_len - handshakingOffset;
+				printf("star update firmware \nfimwareSize=%d,tcpDataSize=%d\n",firmwareSize,rx_len);
+//				log_debug("fst data=%s\n",rx);
+				return 1;
+			}
+		    else
+	        { rx++; rx_len--; }						
+		}
+		rx_len=temp;//检测完固件头，还原位置
+		rx=rx - rx_len;
+	}
+
+    if(fmwStartSign != 0)//固件体数据，写入FLASH
+	{	
+		rx=rx + rx_len - 100;//指针偏移到数据尾部前100个地址，检查是否到达固件尾部
+		for(endOffset=0; endOffset<100; endOffset++)
+		{
+			if(strncmpi(rx, "DEADBEEF",8) == 0)//固件最后的8个字符
+			{	 
+				fmwStartSign = 0;
+				fmwEndSign = 1;//标记到达固件尾   			
+				break;
+			}
+			else
+			{
+				rx++;
+			}
+		}
+
+		if(fmwEndSign != 0)//写最后一帧数据
+		{	
+		    rx=rx - rx_len + 100 - endOffset;//指针还原		    
+			WriteFlash((UINT8 *)rx, rx_len - 100 + endOffset, NVM_FW_BAK_OFFSET + firmwareSize);	
+			firmwareSize+=rx_len - 100 + endOffset +  handshakingOffset + sizeof("DEADBEEF");
+			printf("fimwareSize=%d,tcpDataSize=%d\n", firmwareSize + handshakingOffset - sizeof("DEADBEEF"), rx_len);
+			WriteFlash(&boot_param, sizeof(boot_param), 0x33000);//更改启动参数
+				
+			http_sendfile(idx, "/login.html", (unsigned char *)tx);
+			printf("update success!\n");
+			return 0;
+		}
+		else
+		{	
+		 	rx=rx - rx_len;//指针还原		
+			WriteFlash((UINT8 *)rx, rx_len, NVM_FW_BAK_OFFSET + firmwareSize);	
+			firmwareSize+=rx_len;
+			printf("fimwareSize=%d,tcpDataSize=%d\n", firmwareSize, rx_len);
+//			log_debug("data=%s\n",rx);
+		}
+	}
+	return 1;
 }
